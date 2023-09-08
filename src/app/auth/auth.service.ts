@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private isAuthenticated = true;
+  private isAuthenticated = false;
   private token: string;
   private tokenTimer: any;
   private authStatusListner = new Subject<boolean>();
