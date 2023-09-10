@@ -10,26 +10,27 @@ import { Subscription } from 'rxjs';
 })
 export class SignupComponent implements OnInit, OnDestroy {
 
-  constructor(public authService: AuthService ){}
-  isLoading=false;
+  isLoading = false;
   private authStatusSub: Subscription;
 
+  constructor(public authService: AuthService) {}
 
-ngOnInit(): void {
-  this.authStatusSub=this.authService.getauthStatuslistner().subscribe(
-    authStatus =>{
-      this.isLoading = false;
-    }
-  );
-}
-  onSignup(form: NgForm){
-    if (form.invalid){
+  ngOnInit() {
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
+      authStatus => {
+        this.isLoading = false;
+      }
+    );
+  }
+
+  onSignup(form: NgForm) {
+    if (form.invalid) {
       return;
     }
-    this.isLoading= true;
+    this.isLoading = true;
     this.authService.createUser(form.value.email, form.value.password);
   }
-  
-ngOnDestroy(): void {
-  this.authStatusSub.unsubscribe();
-}}
+
+  ngOnDestroy() {
+    this.authStatusSub.unsubscribe();
+  }}
