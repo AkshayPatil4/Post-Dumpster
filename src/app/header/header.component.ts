@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userIsAuthenticated = this.authService.getIsAuth();
-    this.authListnerSubs = this.authService.getauthStatuslistner().subscribe(isAuthenticated =>{
+    this.authListnerSubs = this.authService.getAuthStatusListener().subscribe(isAuthenticated =>{
       this.userIsAuthenticated = isAuthenticated;
     });
   }

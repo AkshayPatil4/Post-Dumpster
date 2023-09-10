@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { PostService } from '../post.service';
@@ -13,47 +13,46 @@ import { AuthService } from 'src/app/auth/auth.service';
   styleUrls: ['./post-create.component.css'],
 })
 export class PostCreateComponent implements OnInit , OnDestroy {
-  newPost = 'No Content';
-  enteredTitle = '';
-  enteredContent = '';
+  enteredTitle = "";
+  enteredContent = "";
+  post: Post;
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
-  private mode = 'create';
+  private mode = "create";
   private postId: string;
-  post: Post;
   private authStatusSub: Subscription;
 
   constructor(public postService: PostService, public route: ActivatedRoute, private authService : AuthService ) {}
 
-  ngOnInit(): void {
-    this.authStatusSub=this.authService.getauthStatuslistner().subscribe(
-      authStatus=>{
-        this.isLoading= false;
-      }
-    );
+  ngOnInit() {
+    this.authStatusSub = this.authService
+      .getAuthStatusListener()
+      .subscribe(authStatus => {
+        this.isLoading = false;
+      });
     this.form = new FormGroup({
       title: new FormControl(null, {
-        validators: [Validators.required, Validators.minLength(3)],
+        validators: [Validators.required, Validators.minLength(3)]
       }),
       content: new FormControl(null, { validators: [Validators.required] }),
       image: new FormControl(null, {
         validators: [Validators.required],
-        asyncValidators: [mimeType],
-      }),
+        asyncValidators: [mimeType]
+      })
     });
-    this.route.paramMap.subscribe((paramMap) => {
-      if (paramMap.has('postId')) {
-        this.mode = 'edit';
-        this.postId = paramMap.get('postId');
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has("postId")) {
+        this.mode = "edit";
+        this.postId = paramMap.get("postId");
         this.isLoading = true;
-        this.postService.getPost(this.postId).subscribe((postData) => {
+        this.postService.getPost(this.postId).subscribe(postData => {
           this.isLoading = false;
           this.post = {
             id: postData._id,
             title: postData.title,
             content: postData.content,
-            imagePath:postData.imagePath, 
+            imagePath: postData.imagePath,
             creator: postData.creator
           };
           this.form.setValue({
@@ -63,7 +62,7 @@ export class PostCreateComponent implements OnInit , OnDestroy {
           });
         });
       } else {
-        this.mode = 'create';
+        this.mode = "create";
         this.postId = null;
       }
     });
@@ -72,8 +71,7 @@ export class PostCreateComponent implements OnInit , OnDestroy {
   onImagePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({ image: file });
-    this.form.get('image').updateValueAndValidity();
-    console.log(file);
+    this.form.get("image").updateValueAndValidity();
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
@@ -86,7 +84,7 @@ export class PostCreateComponent implements OnInit , OnDestroy {
       return;
     }
     this.isLoading = true;
-    if (this.mode === 'create') {
+    if (this.mode === "create") {
       this.postService.addPost(
         this.form.value.title,
         this.form.value.content,
@@ -100,11 +98,10 @@ export class PostCreateComponent implements OnInit , OnDestroy {
         this.form.value.image
       );
     }
-
     this.form.reset();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.authStatusSub.unsubscribe();
   }
 }
